@@ -1,0 +1,30 @@
+specVersion: "2.5"
+metadata:
+  name: usy.products
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: false
+        backend:
+          - path: /odata
+            url: http://localhost:8080
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+          version: # The UI5 version, for instance, 1.78.1. Empty means latest version
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+    - name: fiori-tools-servestatic
+      afterMiddleware: compression
+      configuration:
+        paths:
+          - path: /appconfig
+            src: C:/Users/I570425/Desktop/Uday_Docs/CMH_Fiori_Learning/ushop/app/products/appconfig

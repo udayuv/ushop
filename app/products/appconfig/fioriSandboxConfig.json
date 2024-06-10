@@ -1,0 +1,9 @@
+{
+    "applications": {
+      "product-display": {
+        "additionalInformation": "SAPUI5.Component=usy.products",
+        "applicationType": "URL",
+        "url": "../"
+      }
+    }
+  }

@@ -1,0 +1,7 @@
+id,name,description,price,rating,stock,discount,CURRENCY_CODE
+1,iPhone 9,An apple mobile which is nothing like apple,549.99,3.6,94,12.96,USD
+2,iPhone x,Model A19211 6.5-inch Super Retina HD display with OLED technology A12 Bionic chip with ,899.19,4.0,34,17.96,USD
+3,Samsung Universe 9,Samsung's new variant which goes beyond Galaxy to the Universe,1249.21,4.9,36,15.46,EUR
+4,MacBook Pro,MacBook Pro 2021 with mini-LED display may launch between September,1749.59,4.7,83,11.02,CAD
+5,Samsung Galaxy Book,"Samsung Galaxy Book S (2020) Laptop With Intel Lakefield Chip, 8GB of RAM Launched",1499.97,3.5,50,4.5,EUR
+6,Microsoft Surface Laptop 4,Style and speed. Stand out on HD video calls backed by Studio Mics. Capture ideas on the vibrant touchscreen,1499.99,4.3,68,10.23,GBP
