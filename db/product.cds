@@ -5,7 +5,7 @@ entity Products {
     key id : Integer;
     name        :   String(30);
     description :   String(200);
-    price       :   String;
+    price       :   Decimal(9,2);
     rating      :   Decimal(2, 1)@assert.range : [ 0.0, 5.0 ];
     stock       :   Integer;
     discount    :   Decimal;

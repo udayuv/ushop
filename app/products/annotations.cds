@@ -1,38 +1,69 @@
 using CatalogService as service from '../../srv/productservice';
 
-annotate service.Products with @(
-    UI.LineItem : [
+annotate service.Products with @(UI : {
+    HeaderInfo : {
+        TypeName : 'Product',
+        TypeNamePlural : 'Products',
+    },
+    LineItem : [
         {
             $Type : 'UI.DataField',
-            Value : name,
-            Label : '{i18n>name}',
+            Value : name
         },
         {
             $Type : 'UI.DataField',
-            Value : price,
-            Label : '{i18n>price}',
+            Value : price
+        },
+        {
+            $Type : 'UI.DataFieldForAnnotation',
+            Target : '@UI.DataPoint#rating'
         },
         {
             $Type : 'UI.DataField',
-            Value : rating,
-            Label : '{i18n>rating}',
+            Value : stock
         },
         {
-            $Type : 'UI.DataField',
-            Value : stock,
-            Label : '{i18n>stock}',
+            Value: description,
+            ![@UI.Hidden]
         },
-    ]
-);
-annotate service.Products with @(
-    UI.SelectionFields : [
+        {
+            Value: currency_code,
+            ![@UI.Hidden]
+        }         
+    ],
+    SelectionFields : [
         price,
         name,
-    ]
-);
-annotate service.Products with {
-    price @Common.Label : 'Price'
+    ],
+    PresentationVariant : {
+        Text : 'Default',
+        SortOrder : [{Property : name}],
+        Visualizations : ['@UI.LineItem']
+    },
+    DataPoint #rating : {
+        Value : rating,
+        Visualization : #Rating,
+        TargetValue : 5
+    }
+})
+
+{
+    //it will hide description from filter option
+    @UI.HiddenFilter
+    description;
+
+    @Measures.ISOCurrency : currency.code
+    price
 };
+
+// this is to make the label common so no need to provide label for filter,column etc
 annotate service.Products with {
-    name @Common.Label : 'Name'
+    price @title : '{i18n>price}';
+    name @title : '{i18n>name}';
+    description @title : '{i18n>description}';
+    rating @title : '{i18n>rating}';
+    stock @title : '{i18n>stock}';
+    discount @title : '{i18n>discount}';
+    //it will hide id from table column settings as well as filter settings
+    id @UI.Hidden;
 };
