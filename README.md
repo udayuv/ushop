@@ -176,3 +176,116 @@ service CatalogService {
     entity Review as projection on ushop.Reviews;
 }
 ```
+
+## Part 8: Custom Actions and Input Type Definitions
+
+### Step 1: Defining aCustom Action
+One of the features of Fiori Elements that can be a little frustrating at first is how to trigger some kind of event on the page. After all, we can’t write any logic directly in the Fiori Elements application, so our hands feel like their
+tied.
+
+However, Fiori Elements is controlled entirely by oData and oData luckily has the perfect feature: custom actions and custom functions. oData borrows this terminology from functional programming, so for those new to that style
+- a `function` is simply a subroutine that has no side-effects — in the case of oData, that would mean no writes to the database. 
+- An `action` on the other hand does include side effects. Again, in oData’s case a side effect would typically just be a write to the database (see this [oData blog article](https://www.odata.org/blog/actions-in-odata/) for more information). 
+
+For a more tangible example, imagine we wanted to get just a count of how many Products are in the database and nothing else — that would be a function because it requires only reading. However, we want to actually write a new Review to the database, so we’re going to create an action. Let’s learn how to do that using CDS.
+
+To begin with, we need to understand that CDS allows us to define two different types of `actions` and `functions`: **bound** and **unbound**. 
+- The *bound* variety is attached to a specific entity, ensuring that the entity is present in the context of any call to it. 
+- The *unbound* variety can be called without any specific entity context (see this [documentation](https://cap.cloud.sap/docs/cds/cdl#actions) for more info). 
+
+In our case the former is what we want because we need to attach our new Review to a specific Product. Let’s get to the code. First let’s open up our `srv/productservice.cds` file to refresh ourselves on our current service definition.
+
+```cds
+using { udayuv.ushop as ushop } from '../db/index';
+
+service CatalogService {
+    entity Products as projection on ushop.Products;
+    entity Reviews as projection on ushop.Reviews;
+}
+```
+
+We wanted to bind our action to our Products entity. Define a list of available actions bound to this entity in the following way. Note that the newline and tab are for readability — they aren’t required
+
+```cds
+using { udayuv.ushop as ushop } from '../db/index';
+
+service CatalogService {
+    entity Products as projection on ushop.Products
+        actions{}
+    entity Reviews as projection on ushop.Reviews;
+}
+```
+
+-   Next we define our action. First we start the definition with the action keyword followed by a name for the action. 
+-   Next is a comma-separated list of inputs for the function, each with a required type. 
+-   Finally, we provide the return type, which we are defining as an instance of the Reviews entity. 
+
+Note that we aren’t limited to returning just entities like Reviews — we could return a custom type as well.
+
+```cds
+using { udayuv.ushop as ushop } from '../db/index';
+
+service CatalogService {
+    entity Products as projection on ushop.Products
+        actions{
+            action addReview(rating : Integer,title : String,text : String) returns Reviews;
+        }
+    entity Reviews as projection on ushop.Reviews;
+}
+```
+
+Let’s compile our service definition using `cds compile --to edmx` to see the effect of our work. This is what will be sent to our Fiori Elements app to tell it how to process our action.
+
+### Step 2:Custom Input Type Definitions
+The weakness of our function definition is that it that its input types are too generic. We know from Part 7, for example, that we defined our our `rating` field as an enum type that only accepts values of 0–5, but an integer could be any non-decimal positive or negative number. Leaving it like this would require some manual validations in the Java handler that we will make for this action later. Instead, though, we can simply reuse the type to the same one we defined before, which is useful because if we update that type definition we won’t need to update the Java code as well. We can do so in the following way:
+
+```cds
+using { udayuv.ushop as ushop } from '../db/index';
+
+service CatalogService {
+    entity Products as projection on ushop.Products
+        actions{
+            action addReview(rating : ushop.Rating,title : String,text : String) returns Reviews;
+        }
+    entity Reviews as projection on ushop.Reviews;
+}
+```
+
+At this point, though, we can see some other issues as well. Recall that when we created our `Review` model, we specified a max-length for the `title` and `text` fields as 100 and 1000 characters respectively:
+
+If we don’t also define that here, then users might submit text that’s too long, again requiring us to do manual validation. We could solve the issue as follows:
+
+```cds
+actions{
+            action addReview(rating : ushop.Rating,title : String(100),text : String(1000)) returns Reviews;
+        }
+```
+
+I think you can already see the problem here, though — what if we decided to change the length for these fields? Then we’d have to update the code in two places, which would be a hassle and easy to forget. Instead, let’s define some custom types to handle this for us. 
+
+In the `db` folder, let’s create two new files,` datatype.cds` under datatype and give them the following content:
+```cds
+namespace udayuv.ushop;
+
+type Name : String(100);
+type Text : String(1000);
+
+```
+
+Let’s not stop there, though! If we look again at our Products entity, we’ll see that it’s name and descr fields are also 100 and 1000 characters respectively. We can reuse our types there. 
+
+Now we can simply use these in our Reviews entity definition and in our action definition:
+
+```cds
+entity Reviews : cuid,managed {
+    product : Association to ushop.Products;
+    rating  : ushop.Rating @assert.range;
+    title   : ushop.Name @mandatory;
+    text    : ushop.Text @mandatory;
+}
+```
+action
+```cds
+  action addReview(rating : ushop.Rating,title : ushop.Name,text : ushop.Text) returns Reviews;
+```
+

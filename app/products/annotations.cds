@@ -16,7 +16,8 @@ annotate service.Products with @(UI : {
         },
         {
             $Type : 'UI.DataFieldForAnnotation',
-            Target : '@UI.DataPoint#rating'
+            Target : '@UI.DataPoint#rating',
+            Label  : '{i18n>rating}'
         },
         {
             $Type : 'UI.DataField',

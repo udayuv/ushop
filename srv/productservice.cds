@@ -1,6 +1,10 @@
-using { udayuv.ushop as ushop } from '../db/index';
+using { udayuv.ushop as ushop } from '../db';
 
 service CatalogService {
-    entity Products as projection on ushop.Products;
-    entity Review as projection on ushop.Reviews;
+    entity Products as projection on ushop.Products
+        actions{
+            action addReview(rating : ushop.Rating,title : ushop.Name,text : ushop.Text) returns Reviews;
+        };
+
+    entity Reviews as projection on ushop.Reviews;
 }
