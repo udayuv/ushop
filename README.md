@@ -171,7 +171,7 @@ Now that we have our new model and some mock data, let’s add it to our oData s
 ```cds
 using { udayuv.ushop as ushop } from '../db/index';
 
-service CatalogService {
+service ProductService {
     entity Products as projection on ushop.Products;
     entity Review as projection on ushop.Reviews;
 }
@@ -198,7 +198,7 @@ In our case the former is what we want because we need to attach our new Review 
 ```cds
 using { udayuv.ushop as ushop } from '../db/index';
 
-service CatalogService {
+service ProductService {
     entity Products as projection on ushop.Products;
     entity Reviews as projection on ushop.Reviews;
 }
@@ -209,7 +209,7 @@ We wanted to bind our action to our Products entity. Define a list of available 
 ```cds
 using { udayuv.ushop as ushop } from '../db/index';
 
-service CatalogService {
+service ProductService {
     entity Products as projection on ushop.Products
         actions{}
     entity Reviews as projection on ushop.Reviews;
@@ -225,7 +225,7 @@ Note that we aren’t limited to returning just entities like Reviews — we cou
 ```cds
 using { udayuv.ushop as ushop } from '../db/index';
 
-service CatalogService {
+service ProductService {
     entity Products as projection on ushop.Products
         actions{
             action addReview(rating : Integer,title : String,text : String) returns Reviews;
@@ -242,7 +242,7 @@ The weakness of our function definition is that it that its input types are too 
 ```cds
 using { udayuv.ushop as ushop } from '../db/index';
 
-service CatalogService {
+service ProductService {
     entity Products as projection on ushop.Products
         actions{
             action addReview(rating : ushop.Rating,title : String,text : String) returns Reviews;

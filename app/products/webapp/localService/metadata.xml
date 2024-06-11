@@ -13,16 +13,16 @@
         <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
     </edmx:Reference>
     <edmx:DataServices>
-        <Schema Namespace="CatalogService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Schema Namespace="ProductService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
             <EntityContainer Name="EntityContainer">
-                <EntitySet Name="Products" EntityType="CatalogService.Products">
+                <EntitySet Name="Products" EntityType="ProductService.Products">
                     <NavigationPropertyBinding Path="currency" Target="Currencies"/>
                 </EntitySet>
-                <EntitySet Name="Currencies" EntityType="CatalogService.Currencies">
+                <EntitySet Name="Currencies" EntityType="ProductService.Currencies">
                     <NavigationPropertyBinding Path="texts" Target="Currencies_texts"/>
                     <NavigationPropertyBinding Path="localized" Target="Currencies_texts"/>
                 </EntitySet>
-                <EntitySet Name="Currencies_texts" EntityType="CatalogService.Currencies_texts"/>
+                <EntitySet Name="Currencies_texts" EntityType="ProductService.Currencies_texts"/>
             </EntityContainer>
             <EntityType Name="Products">
                 <Key>
@@ -35,7 +35,7 @@
                 <Property Name="rating" Type="Edm.Decimal" Scale="1" Precision="2"/>
                 <Property Name="stock" Type="Edm.Int32"/>
                 <Property Name="discount" Type="Edm.Decimal" Scale="variable"/>
-                <NavigationProperty Name="currency" Type="CatalogService.Currencies">
+                <NavigationProperty Name="currency" Type="ProductService.Currencies">
                     <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
                 </NavigationProperty>
                 <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
@@ -49,10 +49,10 @@
                 <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
                 <Property Name="symbol" Type="Edm.String" MaxLength="5"/>
                 <Property Name="minorUnit" Type="Edm.Int16"/>
-                <NavigationProperty Name="texts" Type="Collection(CatalogService.Currencies_texts)">
+                <NavigationProperty Name="texts" Type="Collection(ProductService.Currencies_texts)">
                     <OnDelete Action="Cascade"/>
                 </NavigationProperty>
-                <NavigationProperty Name="localized" Type="CatalogService.Currencies_texts">
+                <NavigationProperty Name="localized" Type="ProductService.Currencies_texts">
                     <ReferentialConstraint Property="code" ReferencedProperty="code"/>
                 </NavigationProperty>
             </EntityType>
@@ -66,15 +66,15 @@
                 <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
                 <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
             </EntityType>
-            <Annotations Target="CatalogService.Products/rating">
+            <Annotations Target="ProductService.Products/rating">
                 <Annotation Term="Validation.Minimum" Int="0"/>
                 <Annotation Term="Validation.Maximum" Int="5"/>
             </Annotations>
-            <Annotations Target="CatalogService.Products/currency">
+            <Annotations Target="ProductService.Products/currency">
                 <Annotation Term="Common.Label" String="{i18n>Currency}"/>
                     <Annotation Term="Core.Description" String="{i18n>CurrencyCode.Description}"/>
                     </Annotations>
-                    <Annotations Target="CatalogService.Products/currency_code">
+                    <Annotations Target="ProductService.Products/currency_code">
                         <Annotation Term="Common.Label" String="{i18n>Currency}"/>
                             <Annotation Term="Common.ValueList">
                                 <Record Type="Common.ValueListType">
@@ -95,7 +95,7 @@
                                 </Annotation>
                                 <Annotation Term="Core.Description" String="{i18n>CurrencyCode.Description}"/>
                                 </Annotations>
-                                <Annotations Target="CatalogService.Currencies">
+                                <Annotations Target="ProductService.Currencies">
                                     <Annotation Term="UI.Identification">
                                         <Collection>
                                             <Record Type="UI.DataField">
@@ -104,32 +104,32 @@
                                         </Collection>
                                     </Annotation>
                                 </Annotations>
-                                <Annotations Target="CatalogService.Currencies/name">
+                                <Annotations Target="ProductService.Currencies/name">
                                     <Annotation Term="Common.Label" String="{i18n>Name}"/>
                                     </Annotations>
-                                    <Annotations Target="CatalogService.Currencies/descr">
+                                    <Annotations Target="ProductService.Currencies/descr">
                                         <Annotation Term="Common.Label" String="{i18n>Description}"/>
                                         </Annotations>
-                                        <Annotations Target="CatalogService.Currencies/code">
+                                        <Annotations Target="ProductService.Currencies/code">
                                             <Annotation Term="Common.Text" Path="name"/>
                                             <Annotation Term="Common.Label" String="{i18n>CurrencyCode}"/>
                                             </Annotations>
-                                            <Annotations Target="CatalogService.Currencies/symbol">
+                                            <Annotations Target="ProductService.Currencies/symbol">
                                                 <Annotation Term="Common.Label" String="{i18n>CurrencySymbol}"/>
                                                 </Annotations>
-                                                <Annotations Target="CatalogService.Currencies/minorUnit">
+                                                <Annotations Target="ProductService.Currencies/minorUnit">
                                                     <Annotation Term="Common.Label" String="{i18n>CurrencyMinorUnit}"/>
                                                     </Annotations>
-                                                    <Annotations Target="CatalogService.Currencies_texts/locale">
+                                                    <Annotations Target="ProductService.Currencies_texts/locale">
                                                         <Annotation Term="Common.Label" String="{i18n>LanguageCode}"/>
                                                         </Annotations>
-                                                        <Annotations Target="CatalogService.Currencies_texts/name">
+                                                        <Annotations Target="ProductService.Currencies_texts/name">
                                                             <Annotation Term="Common.Label" String="{i18n>Name}"/>
                                                             </Annotations>
-                                                            <Annotations Target="CatalogService.Currencies_texts/descr">
+                                                            <Annotations Target="ProductService.Currencies_texts/descr">
                                                                 <Annotation Term="Common.Label" String="{i18n>Description}"/>
                                                                 </Annotations>
-                                                                <Annotations Target="CatalogService.Currencies_texts/code">
+                                                                <Annotations Target="ProductService.Currencies_texts/code">
                                                                     <Annotation Term="Common.Text" Path="name"/>
                                                                     <Annotation Term="Common.Label" String="{i18n>CurrencyCode}"/>
                                                                     </Annotations>

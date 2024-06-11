@@ -7,7 +7,7 @@
 |**Generation Platform**<br>Visual Studio Code|
 |**Template Used**<br>List Report Page V4|
 |**Service Type**<br>Local Cap|
-|**Service URL**<br>http://localhost:4004/odata/v4/CatalogService/
+|**Service URL**<br>http://localhost:4004/odata/v4/ProductService/
 |**Module Name**<br>products|
 |**Application Title**<br>Products|
 |**Namespace**<br>usy|

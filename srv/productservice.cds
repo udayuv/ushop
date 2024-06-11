@@ -1,6 +1,6 @@
 using { udayuv.ushop as ushop } from '../db';
 
-service CatalogService {
+service ProductService {
     entity Products as projection on ushop.Products
         actions{
             action addReview(rating : ushop.Rating,title : ushop.Name,text : ushop.Text) returns Reviews;

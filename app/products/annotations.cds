@@ -1,4 +1,4 @@
-using CatalogService as service from '../../srv/productservice';
+using ProductService as service from '../../srv/productservice';
 
 annotate service.Products with @(UI : {
     HeaderInfo : {
