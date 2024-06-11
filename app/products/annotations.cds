@@ -65,5 +65,5 @@ annotate service.Products with {
     stock @title : '{i18n>stock}';
     discount @title : '{i18n>discount}';
     //it will hide id from table column settings as well as filter settings
-    id @UI.Hidden;
+    ID @UI.Hidden;
 };

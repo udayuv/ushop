@@ -1,5 +1,6 @@
-using { udayuv.ushop as product } from '../db/product';
+using { udayuv.ushop as ushop } from '../db/index';
 
 service CatalogService {
-    entity Products as projection on product.Products;
+    entity Products as projection on ushop.Products;
+    entity Review as projection on ushop.Reviews;
 }
