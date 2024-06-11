@@ -29,3 +29,6 @@ content-type: application/json
   "text": "Birds freak me out",
   "rating": 1
 }
+
+### Get the new Review
+GET http://localhost:8080/odata/v4/ProductService/Reviews(a104626a-0b08-42a6-87e8-7bd60be1dbbd) HTTP/1.1
