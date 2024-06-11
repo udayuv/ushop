@@ -289,3 +289,173 @@ action
   action addReview(rating : ushop.Rating,title : ushop.Name,text : ushop.Text) returns Reviews;
 ```
 
+## Part 9: Handler Setup, Event Lifecycle Phases, and Context Objects
+
+### Step 1: Setting Up the Service Handler
+Our first step is to set up our boilerplate code for the service handler. Let’s start by creating a folder called `handlers` in `srv/src/main/java/uv` and inside it creating a file called `ProductServiceHandler.java`.
+
+If you set up your environment correctly, then a basic Java class boilerplate should already be generated in the file.
+```java
+package uv.handlers;
+
+public class ProductServiceHandler {
+    
+}
+```
+
+The first thing we need to do is get access to the standard event handler functionality by implementing the CDS `EventHandler` interface and to provide the Component annotation from the SpringBoot framework, as shown below:
+
+```java
+package uv.handlers;
+
+import org.springframework.stereotype.Component;
+
+import com.sap.cds.services.handler.EventHandler;
+
+@Component
+public class ProductServiceHandler implements EventHandler {
+    
+}
+```
+With these we’re almost set up, but there’s a problem: CAP doesn’t know which service this handler belongs to, so even if we write some logic, it can’t be triggered. We need to use CAP’s `ServiceName` annotation and provide it the name of our service as a String.
+
+```java
+@Component
+@ServiceName("ProductService")
+public class ProductServiceHandler implements EventHandler {
+    
+}
+```
+
+As you can imagine, though, using a String literal as an input is a little bit dangerous — after all, we can’t easily see if we made a typo. Luckily CAP automatically generates some files for us from our CDS that can help us out here. Open the `srv/src/gen` folder to check them out.
+
+As you can see, CAP generated a `productservice` folder that contains Java interfaces generated from our CDS files. These provide us a type-safe way of handling our service. For example, open `ProductService_.java` and see what we find inside.
+
+Notice the property `CDS_NAME` — it’s the name of our service as a string. Because it was generated straight from our CDS, we know that it matches correctly, so we won’t have any typos. Let’s go ahead and use this instead of the string literal from before.
+
+```java
+...
+import cds.gen.productservice.ProductService_;
+
+@Component
+@ServiceName(ProductService_.CDS_NAME)
+public class ProductServiceHandler implements EventHandler {
+    
+}
+```
+
+Now our service handler is ready to receive calls on the `productservice` and process them. You can confirm this by starting up your server and looking for the following output:
+
+```log
+2024-06-11T22:24:01.854+05:30  INFO 23196 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service OutboxService$InMemory
+2024-06-11T22:24:01.862+05:30  INFO 23196 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service ApplicationLifecycleService$Default
+2024-06-11T22:24:01.862+05:30  INFO 23196 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service AuthorizationService$Default
+2024-06-11T22:24:01.869+05:30  INFO 23196 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service TenantProviderService$Default
+2024-06-11T22:24:01.870+05:30  INFO 23196 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service DeploymentService$Default
+2024-06-11T22:24:01.878+05:30  INFO 23196 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service AuditlogService$Default
+2024-06-11T22:24:01.913+05:30  INFO 23196 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service ProductService
+```
+
+Next let’s add a lifecycle method!
+### Step 2: The ‘On’ Lifecycle Method
+CAP provides three lifecycle methods to help us manage our services — `Before`, `On`, and `After`. You can probably guess from the names, but 
+-   `Before` is for handling preprocessing of the request, for example checking authorizations, 
+-   `On` is where the actual database query should be carried out, 
+-   and `After` is for postprocessing, for example setting up the values for a calculated field. 
+
+To keep things simple, we’re going to start with just implementing an On handler. The following is the basic setup for one:
+```java
+@Component
+@ServiceName(ProductService_.CDS_NAME)
+public class ProductServiceHandler implements EventHandler {
+    @On
+    public void addReview(){}
+}
+```
+
+What we see here is the On annotation, which is used to designate that the following function as an On event handler. We designate it as public since CAP will need to call this function from outside the class. Finally, we give it a descriptive name. Note that the function name can be anything — CAP doesn’t use the name to link it with the function defined in CDS. If we try to start the application as it is, we’ll get the following error message:
+
+```log
+com.sap.cds.services.utils.ErrorStatusException: Failed to register handler method 'public void uv.handlers.ProductServiceHandler.addReview()': No event definition in annotations or arguments
+```
+This is because for the On annotation to work, we need to tell it when to run — or more specifically, under what conditions it should run. We can do that by passing in some attributes to it. There are four possible attributes that can be added: `service`, `serviceType`, `event`, and `entity`. 
+
+We need at least one but we can use as many as we want to target our function to run in as many or as few situations as we need. You can read more about these attributes [here](https://cap.cloud.sap/docs/java/provisioning-api#handlerannotations). 
+-   The service annotation isn’t necessary because we already defined that with our ServiceName annotation. You’d only use that one if you wanted an event written in one service handler to be triggered by an event from a completely different service. 
+-   serviceType is a bit over our heads now since we haven’t considered the different types of services in a CAP app (we’re currently working in what’s called an Application Service), but suffice to say if we wanted to respond to some event that occurs in another type of service we’d specify that here. 
+-   The entity parameter is used to specify which entity we want to trigger the action on. 
+-   And finally, the parameter we care most about: event 
+
+CAP has a number of pre-defined events that correspond to the basic CRUD events (with a few extras), but when we create a custom action or function CAP registers that as an event too. We simply need to provide a string containing the name of our action as shown below:
+```java
+    @On(event="addReview")
+    public void addReview(){}
+```
+
+As you might have guessed from Step 1, though, CAP provides us with an automatically generated file that contains the name written for us so we don’t have to worry about any typos. Look in the gen folder to find it, There you see it: CDS_NAME, just like before. Let’s use that instead
+```java
+    @On(event=AddReviewContext.CDS_NAME)
+    public void addReview(){}
+```
+Now we can start up the app with no problem. In the next step we’ll learn how to test our new action using a REST client.
+
+### Step 3: Testing a Bound Action
+Before we start writing the logic, we want to be set up to test that logic, so we need some way to trigger our action. You may recall from earlier posts in this series that we used the REST Client addon to VS Code to test the CRUD actions for our Books and Reviews entities and we’re going to use it again here. Before we move over to our test file srv/api-test/cat-service.http, let’s add a println to log Triggered the action! to the console when the function we wrote is called.
+
+Now back in our productservice.http file we need to prepare our request, starting with the endpoint. For bound actions in oData V4, the syntax is as follows:
+`<entity_name>(<entity_id>)/<service_name>.<action_name>`
+
+So to test this let’s just get one id for a product and plug it in so we get the following:
+```
+http://localhost:8080/odata/v4/ProductService/Products(f846b0b9-01d4-4f6d-82a4-d79204f62278)/ProductService.addReview
+```
+Now we just need to package it up as a POST request and provide a JSON of the input data, as shown below.
+```http
+POST http://localhost:8080/odata/v4/ProductService/Products(f846b0b9-01d4-4f6d-82a4-d79204f62278)/ProductService.addReview HTTP/1.1
+content-type: application/json
+
+{
+  "title": "I hated it",
+  "text": "Birds freak me out",
+  "rating": 1
+}
+```
+
+Now, if we click Send Request and check the console, we can find our message logged. However, you’ll also noticed that we go an error:
+
+```log
+com.sap.cds.services.utils.ErrorStatusException: No ON handler completed the processing
+```
+This might seem confusing since we did successfully define our On handler, as our console output shows. However, CAP requires a handler to finish with an explicit declaration that its processing completed successfully. We’ll look at how to do that in Part 10 of this series; for now, let’s dive into the context object.
+
+### Step 4: TheContext Object and Its Properties
+So we have our action setup and ready for our logic, but as usual, we have a problem: Where are our inputs? How can I get the ID of the product since it’s not an input? And how can I fix that pesky error from the last section? All of those problems can be solved by the context object. 
+
+Recall that when we specified the event for the On handler, we used `AddReviewContext.cds’s` CDS_NAME property. As you may have guessed by now, there’s a lot more that this interface can do than simply give us access to a string. To get access to the context, we simply need to provide it as a parameter to our function and CAP will pass in the appropriate data automatically.
+
+Now we let’s get started on processing our inputs. First, we need to extract them from the `context`. Take a look at the `AddReviewContext.cds` file and you’ll see the following methods.
+
+They’re getter and setter methods for our inputs. Let’s extract them and print them to the console to confirm.
+
+```java
+@Component
+@ServiceName(ProductService_.CDS_NAME)
+public class ProductServiceHandler implements EventHandler {
+    @On(event=AddReviewContext.CDS_NAME)
+    public void addReview(AddReviewContext context){
+        String title = context.getTitle();
+        String text = context.getText();
+        Integer rating = context.getRating();
+
+        System.out.println("Action Triggered!!!");
+        System.out.println(title);
+        System.out.println(rating);
+        System.out.println(text);
+
+        context.setCompleted();
+    }
+}
+```
+We saw earlier that when we define entities in CDS, CAP creates type-safe interface for us to use. We can use that now to create a Review object and populate it with our data.
+
+First we import the Reviews interface, then we instantiate a Review object using the create method. Next we can use getters and setters just like before to populate the values:

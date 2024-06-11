@@ -1,0 +1,31 @@
+### Get all products
+GET http://localhost:8080/odata/v4/ProductService/Products HTTP/1.1
+
+### Create a book
+POST http://localhost:8080/odata/v4/ProductService/Products HTTP/1.1
+content-type: application/json
+
+{
+  "name": "iPhone 9",
+  "description": "An apple mobile which is nothing like apple",
+  "price": 549.99,
+  "rating": 3.6,
+  "stock": 94,
+  "discount": 12.96,
+  "currency_code": "USD"
+}
+
+### Get the product
+GET http://localhost:8080/odata/v4/ProductService/Products(f846b0b9-01d4-4f6d-82a4-d79204f62278) HTTP/1.1
+
+
+
+### Create a review using the addReview method
+POST http://localhost:8080/odata/v4/ProductService/Products(f846b0b9-01d4-4f6d-82a4-d79204f62278)/ProductService.addReview HTTP/1.1
+content-type: application/json
+
+{
+  "title": "I hated it",
+  "text": "Birds freak me out",
+  "rating": 1
+}
