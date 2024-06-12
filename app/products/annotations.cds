@@ -30,11 +30,7 @@ annotate service.Products with @(UI : {
         {
             Value: currency_code,
             ![@UI.Hidden]
-        },
-        {
-            $Type:'UI.DataFieldForAnnotation',
-            Target:'@UI.FieldGroup#AddReview'
-        }     
+        }   
     ],
     SelectionFields : [
         price,
@@ -49,14 +45,7 @@ annotate service.Products with @(UI : {
         Value : rating,
         Visualization : #Rating,
         TargetValue : 5
-    },
-    FieldGroup #AddReview : {Data:[{
-        $Type: 'UI.DataFieldForAction',
-        Label: 'Add Review',
-        Action: 'ProductService.addReview',
-        InvocationGrouping: #Isolated
-        }]
-    },
+    }
 })
 
 {

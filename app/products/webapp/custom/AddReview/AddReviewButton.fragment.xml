@@ -1,0 +1,11 @@
+<core:FragmentDefinition
+	xmlns:core="sap.ui.core"
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout">
+	<l:VerticalLayout
+		core:require="{handler: 'usy/products/custom/AddReview/AddReviewButtonHandler'}">
+		<Button
+			text="Add Review"
+			press="handler.openDialog" />
+	</l:VerticalLayout>
+</core:FragmentDefinition>

@@ -658,3 +658,72 @@ Even though we specified our enum type as an input, look what happens when we in
 ## Part 12: Adding a custom components to Fiori Elements, basic SAPUI5 dialog setup
 
 ### Step 1: Setting Up a SimpleComponent and Adding into the UI
+
+Next, let’s create some space for our custom components. First make a folder called `custom` inside *webapp*. This will hold all custom components that we make. Since we might make more in the future we’ll make a second subfolder called `AddReview` to hold the files related to this add review action. Finally, create two files, one called `AddReviewButton.fragment.xml` and `AddReviewButtonHandler.js`. 
+
+The former will contain the xml UI specification for the button and the latter will contain the logic. Note that the `.fragment` in the name is important! We need to use a fragment in an extension point.
+
+
+Now let’s put in just enough filler code so we have something to insert into the UI to confirm that everything is working as expected. First, in AddReviewButton we’ll define a simple SAPUI5 button:
+
+```xml
+<core:FragmentDefinition
+	xmlns:core="sap.ui.core"
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout">
+	<l:VerticalLayout
+		core:require="{handler: 'ushop/custom/AddReview/AddReviewButtonHandler'}">
+		<Button
+			text="Add Review"
+			press="handler.openDialog" />
+	</l:VerticalLayout>
+</core:FragmentDefinition>
+```
+- Just as a brief explanation, we are using the `FragmentDefinition` component to define a fragment. 
+- The attributes of this element are simply establishing aliases for the SAPUI5 modules used in this component so we don’t have to type them all out.
+- Next we provide a `VerticalLayout` from the layout module and within that we require our CustomColumn.js file so we can use the logic we write there in this file. Check [here](https://sapui5.hana.ondemand.com/sdk/#/api/sap.ui.layout.VerticalLayout%23overview) for more information about *VerticalLayout*.
+- Finally, we provide a `Button` component, with a text attribute for the text we want to display in the button and a `press` attribute that directs to a method called onPress from our `AddReviewHandler.js` file. 
+
+We’ll define this next.
+
+```js
+sap.ui.define(["sap/m/MessageBox"], function (MessageBox){
+    "use strict";
+
+    return {
+        onPress: function(){
+            MessageBox.show("ButtonPressed");
+        },
+    };
+})
+```
+
+Here we import the `MessageBox` component (the syntax is from jQuery so check that if you’re unsure what the above is doing). We’re going to delete this later but we just want to use it here to confirm that our files are linked. We return an object with our onPress function that opens the MessageBox and displays *“Button pressed!”*. For more info on the MessageBox, check this [documentation](https://sapui5.hana.ondemand.com/sdk/#/api/sap.m.MessageBox).
+
+Now we need to actually insert this button into the UI. We’ll do that in our manifest.json file. Go down through the file to where we defined our ListReport page. From there, locate the settings object and add in the following code:
+
+```json
+     "targets": {
+        "ProductsList": {
+          "type": "Component",
+          "id": "ProductsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              ...
+              "controlConfiguration":{
+                "@com.sap.vocabularies.UI.v1.LineItem":{
+                  "columns" :{
+                    "AddReviewColumn":{
+                      "header":"Add Review",
+                      "template":"usy.products.custom.AddReview.AddReviewButton"
+                    }
+                  }
+                }
+              },
+```
+Now, if we boot up the app we’ll see our button and we can click it to confirm that our handler file is properly linked.
+
+Good deal! We have our custom component working. Next we need to actually implement the logic for this action. Let’s get  to it.
+
+

@@ -106,6 +106,19 @@
             "settings": {
               "contextPath": "/Products",
               "variantManagement": "Page",
+              "controlConfiguration":{
+                "@com.sap.vocabularies.UI.v1.LineItem":{
+                  "tableSettings": {
+                        "selectionMode": "None"
+                    },
+                  "columns" :{
+                    "AddReviewColumn":{
+                      "header":"Add Review",
+                      "template":"usy.products.custom.AddReview.AddReviewButton"
+                    }
+                  }
+                }
+              },
               "navigation": {
                 "Products": {
                   "detail": {
