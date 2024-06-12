@@ -30,7 +30,11 @@ annotate service.Products with @(UI : {
         {
             Value: currency_code,
             ![@UI.Hidden]
-        }         
+        },
+        {
+            $Type:'UI.DataFieldForAnnotation',
+            Target:'@UI.FieldGroup#AddReview'
+        }     
     ],
     SelectionFields : [
         price,
@@ -45,7 +49,14 @@ annotate service.Products with @(UI : {
         Value : rating,
         Visualization : #Rating,
         TargetValue : 5
-    }
+    },
+    FieldGroup #AddReview : {Data:[{
+        $Type: 'UI.DataFieldForAction',
+        Label: 'Add Review',
+        Action: 'ProductService.addReview',
+        InvocationGrouping: #Isolated
+        }]
+    },
 })
 
 {
@@ -56,6 +67,10 @@ annotate service.Products with @(UI : {
     @Measures.ISOCurrency : currency.code
     price
 };
+
+annotate ProductService.Products actions{
+    addReview(rating @title : 'Rating',title @title : 'Title',text @title : 'Text')
+}
 
 // this is to make the label common so no need to provide label for filter,column etc
 annotate service.Products with {

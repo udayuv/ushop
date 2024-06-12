@@ -596,3 +596,65 @@ Finally, instead of finishing the method with context.setCompleted(), which is u
         context.setResult(newReview);
     }
 ```
+
+
+## Part 11: Adding a custom action to a Fiori Elements page, problems with the sample app’s implementation
+
+### Step 1: Defining the Add Review Button inCDS
+
+The Add Review button exists as a column of the table, so we need to define it as column like we did for the other data in the table — by adding another item to the LineItem annotation. It’ll look like this below:
+
+```cds
+{
+    $Type:'UI.DataFieldForAnnotation',
+    Target:'@UI.FieldGroup#AddReview'
+}  
+```
+You’ll notice that, like the Rating field above, we need to specify the type as `UI.DataFieldForAnnotation`. Without this, we would get the default type of `DataField`, which simply displays a value; `DataFieldForAnnotation` says that we
+will define was goes here using a different annotation. 
+
+We specified that annotation using the Target property, `UI.FieldGroup#AddReview`. The part before the hashtag specifies what type of annotation will contain the information about the target; the part after the hashtag specifies the name of
+the annotation, which will be provided by us. 
+
+Notice also that we didn’t provide a label annotation, which would ordinarily give us a column label. This is because for some reason Fiori Elements ignores the label property for this kind of LineItem, so there’s no need to include it. Just trying to start up the application now will lead to an error though because we haven’t defined the FieldGroup yet. Let’s do that now.
+
+```cds
+    FieldGroup #AddReview : {Data:[{
+        $Type: 'UI.DataFieldForAction',
+        Label: 'Add Review',
+        Action: 'ProductService.addReview',
+        InvocationGrouping: #Isolated
+        }]
+    },
+```
+
+In the same file we add the `FieldGroup` annotation followed by `#AddReview`. Now our annotation from above has something to find. Next we provide an object with one attribute: `Data`. 
+
+Data consists of an array of objects with the properties $Type, Label, Action, and InvocationGrouping. We could presumably add as many of these objects as we like, for example to add multiple buttons to this single column. We only need one here, however so we’ll leave it at that. 
+
+As a *type* we specify `UI.DataFieldForAction`. This tells Fiori Elements that this button is going to be linked to an oData action like the one we defined in the last few episodes of this series. *Label* describes what the text of the button that this will generate will be. This is different from the LineItem label, which determines what the label for a column will be. Next we specify `Action` as <NameOfService>.<NameOfAction>, so `ProductService.addReview`. 
+
+Finally, we set the `InvocationGrouping` to `#Isolated`. What this does is specify the error handling of this action. Isolated means if multiple actions are executed at once and one of them fails then the others should still be allowed to complete. 
+
+We could also choose `ChangeSet` to specify that if one fails they should all fail. In our case we don’t need the ChangeSet behavior since we aren’t firing off a set of these actions at the same time. Let’s take a look at the result And we can even click the button to display a form for to input the rating information.
+
+Notice that there’s something we’re still missing here: the field labels are all just the names of the variables. We should provide proper labels for them. Let’s do that. Go to annotation.cds and add the following lines:
+
+```cds
+annotate ProductService.Products actions{
+    addReview(rating @title : 'Rating',title @title : 'Title',text @title : 'Text')
+}
+```
+
+Now go ahead and try adding a Review. It works…kind of. But we have some problems. Let’s talk about them.
+
+### Step 2: Problems With the Sample App’s Implementation
+#### Problem 1: The Rating Field Input
+The UI is just not good for our purposes here. We have a 0–5 rating system, but the user can type in anything they want. Such a limited number of options would be better served by a radio button group or a dropdown menu. Here though the user is left to just type in values and see what works. Luckily, thanks to the input types we specified, at the very least we do get an a validation error if we type in a non-integer value.
+
+Even though we specified our enum type as an input, look what happens when we input a number that’s out of range for eg 400. What’s the deal? Well, if we check how the CDS compiles to edmx, we can find the answer (run `cds compile srv/productservice.cds --to edmx`):
+
+
+## Part 12: Adding a custom components to Fiori Elements, basic SAPUI5 dialog setup
+
+### Step 1: Setting Up a SimpleComponent and Adding into the UI
