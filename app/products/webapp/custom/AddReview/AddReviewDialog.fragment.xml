@@ -1,0 +1,19 @@
+<core:FragmentDefinition
+   xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+   <Dialog
+      title="Add Review"
+      core:require="{handler: 'usy/products/custom/AddReview/AddReviewDialogHandler'}">
+      <buttons>
+        <Button
+            id="submitReview"
+            text="Submit"
+            type="Emphasized"
+            press="handler.submit" />
+        <Button
+            id="cancelReview"
+            press="handler.cancel"
+            text="Cancel" />
+      </buttons>
+   </Dialog>
+</core:FragmentDefinition>

@@ -675,7 +675,7 @@ Now let’s put in just enough filler code so we have something to insert into t
 		core:require="{handler: 'ushop/custom/AddReview/AddReviewButtonHandler'}">
 		<Button
 			text="Add Review"
-			press="handler.openDialog" />
+			press="handler.onPress" />
 	</l:VerticalLayout>
 </core:FragmentDefinition>
 ```
@@ -726,4 +726,200 @@ Now, if we boot up the app we’ll see our button and we can click it to confirm
 
 Good deal! We have our custom component working. Next we need to actually implement the logic for this action. Let’s get  to it.
 
+### Step 2: Setting Up the Add Review Dialog
+Now we need to scrap that test popover that we set up in the previous step and build a dialog that will hold our inputs for a review. First let’s go back to `AddReviewButton.fragment.xml` and rename our press function to be a little more descriptive of its purpose:
+```xml
+<core:FragmentDefinition
+	xmlns:core="sap.ui.core"
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout">
+	<l:VerticalLayout
+		core:require="{handler: 'ushop/custom/AddReview/AddReviewButtonHandler'}">
+		<Button
+			text="Add Review"
+			press="handler.openDialog" />
+	</l:VerticalLayout>
+</core:FragmentDefinition>
+```
+Next let’s define the basic layout for our fragment:
+
+```xml
+<core:FragmentDefinition
+   xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+   <Dialog
+      title="Add Review"
+      core:require="{handler: 'usy/products/custom/AddReview/AddReviewDialogHandler'}">
+      <buttons>
+        <Button
+            id="submitReview"
+            text="Submit"
+            type="Emphasized"
+            press="handler.submit" />
+        <Button
+            id="cancelReview"
+            press="handler.cancel"
+            text="Cancel" />
+      </buttons>
+   </Dialog>
+</core:FragmentDefinition>
+```
+In our dialog definition we start out with a `FragmentDefinition` like we did with the button fragment. Following that, we use SAPUI5’s dialog element. We provide it with a `title`, Add Review, and *link* it to it’s own handler (which we will create later). Then we provide a buttons aggregation with two Button elements (the type=”Emphasized” makes the submit button appear blue). In a little while we’ll see how this renders, but first we need to handle the logic that loads this fragment, so let’s go back to `AddReviewButtonHandler.js` to do that.
+
+Let’s start with just an empty openDialog function (note that we also import Fragment from sap.ui.core since we will need it to load the fragment later):
+
+```js
+sap.ui.define(["sap/m/MessageBox"], function (MessageBox){
+    "use strict";
+
+    return {
+        openDialog: function(){
+            
+        },
+    };
+})
+```
+Before we try to open the dialog, we need to decide where in the List Report we want to anchor it. Since we only need one of these fragments, we should just attach it to the main parent component. Let’s do that first.
+
+```js
+const ProductListPage = sap.ui.getCore().byId("usy.Products::ProductsList")
+```
+
+To access our list report we first `use sap.ui.getCore()`, which returns the object that defines the global instance of our SAPUI5 app. Next we use the byId method from the core to extract our BooksList List Report app. 
+
+In your own application, then you should use the following pattern to get yours: <appId>::<target>. You saw how to find the app id above. The target is as you see below (from manifest.json).
+
+```json
+      ],
+      "targets": {
+        "ProductsList": {
+          "type": "Component",
+          "id": "ProductsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Products",
+              "variantManagement": "Page",
+              "controlConfiguration":{
+                "@com.sap.vocabularies.UI.v1.LineItem":{
+                  "tableSettings": {
+                        "selectionMode": "None"
+                    },
+                  "columns" :{
+                    "AddReviewColumn":{
+                      "header":"Add Review",
+                      "template":"usy.products.custom.AddReview.AddReviewButton"
+                    }
+                  }
+                }
+              },
+```
+
+Next we have to actually load the fragment. This step is a little complicated, but basically we want to make sure that we only load this dialog once so we don’t end up loading it repeatedly after every click — we could bog down the
+user’s browser otherwise. 
+
+However, the only chance we have to load it is in this click handler. Therefore, we’re going to first add a check to see if we’ve already loaded the dialog, as shown below
+
+```js
+    openDialog: function(){
+        const oProductlistPage = sap.ui.getCore().byId("usy.products::ProductsList")
+        if (!this.oAddReviewDialog) {
+        }
+    }
+```
+
+The reason we’ve checked `this.oAddReviewDialog` is that we’re going to cache the dialog within the handler itself. 
+
+Next, let’s load the fragment. Note that fragment loading is asynchronous so we will have to use `async/await`.
+
+```js
+openDialog: async function(){
+    const oProductlistPage = sap.ui.getCore().byId("usy.products::ProductsList")
+    if (!this.oAddReviewDialog) {
+        await Fragment.load({
+            id: `${oProductlistPage.getId()}-AddReviewDialog`,
+            name:"usy.products.custom.AddReview.AddReviewDialog"
+        });
+    }
+```
+
+First we specify the function as `asynchronous` with the `async` keyword, then we `await` [Fragment.load](https://sapui5.hana.ondemand.com/sdk/#/api/sap.ui.core.Fragment%23methods/sap.ui.core.Fragment.load). For our settings object, we’ll provide two keys: `id` and `name`. 
+
+The id here serves two purposes. One is of course so we can access the fragment from elsewhere if we want to in the future by using the byId method as we used it above to get the ProductList Page, but it will also cause SAPUI5 to throw an error if we instantiate a second dialog. This will help us know whether we made a mistake in setting up our logic to make sure the fragment only loads once.
+
+The second property is name, which is simply a string to identify the fragment. It follows the same pattern that we used to load our `AddReviewButton` fragment in `manifest.json` from the previous step.
+
+Of course, right now we’re just loading the fragment then throwing it into oblivion, so let’s go ahead and cache it.
+
+```js
+openDialog: async function(){
+    const oProductlistPage = sap.ui.getCore().byId("usy.products::ProductsList")
+    if (!this.oAddReviewDialog) {
+        this.oAddReviewDialog = await Fragment.load({
+            id: `${oProductlistPage.getId()}-AddReviewDialog`,
+            name:"usy.products.custom.AddReview.AddReviewDialog"
+        });
+    }
+}
+```
+
+Next, we have to add our dialog as a dependent of the ProductList Page. This is so the dialog will be part of the page’s lifecycle, meaning that it will be destroyed when the page is destroyed. This will also give it access to the oData service that we have registered on the page, which we’ll definitely need later on.
+
+```js
+openDialog: async function(){
+    const oProductlistPage = sap.ui.getCore().byId("usy.products::ProductsList")
+    if (!this.oAddReviewDialog) {
+        this.oAddReviewDialog = await Fragment.load({
+            id: `${oProductlistPage.getId()}-AddReviewDialog`,
+            name:"usy.products.custom.AddReview.AddReviewDialog"
+        });
+        oProductlistPage.addDependent(this.oAddReviewDialog);
+    }
+}
+```
+
+Finally, once all of this is finished, we open the dialog:
+
+```js
+openDialog: async function(){
+    const oProductlistPage = sap.ui.getCore().byId("usy.products::ProductsList")
+    if (!this.oAddReviewDialog) {
+        this.oAddReviewDialog = await Fragment.load({
+            id: `${oProductlistPage.getId()}-AddReviewDialog`,
+            name:"usy.products.custom.AddReview.AddReviewDialog"
+        });
+        oProductlistPage.addDependent(this.oAddReviewDialog);
+    }
+    this.oAddReviewDialog.open();
+}
+```
+After all of that, we can finally boot the app and see the result,those two buttons (Submit and Cancel) don’t do anything yet, so once we open the dialog it’ll stay open forever. Let’s fix that. First make a file called `AddReviewDialogHandler.js` and give it the following content.
+
+```js
+sap.ui.define([], function () {
+    "use strict";
+  
+    const getAddReviewDialog = (oEvent) => oEvent.getSource().getParent();
+
+    return {
+        beforeOpenDialog: function () {
+            console.log("BEFORE OPEN RAN");
+        },
+        submit: function (oEvent) {
+            getAddReviewDialog(oEvent).close();
+        },
+    
+        cancel: function (oEvent) {
+            getAddReviewDialog(oEvent).close();
+        },
+    };
+  });
+```
+
+Here we defined two functions: submit and cancel, which if you recall from our dialog fragment where the press handlers for our submit and cancel buttons.
+
+- SAPUI5 automatically passes in an event object into this event handler functions, which we can use to access the element that triggered the event using the getSource() method, which would be the button we clicked on. 
+- Our goal now is to close the dialog, so we don’t actually want the button but the dialog. Since the dialog will always be the immediate parent of the button, we can call getParent on the button object. 
+- Finally, once we have the dialog, we use the close method to, you know, close it. 
+- In this case I made a helper method called `getAddReviewDialog` to make what’s happening a little more explicit. Now, if you restart the app and try closing the dialog, you’ll see that it works!
 
