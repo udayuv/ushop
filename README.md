@@ -902,9 +902,6 @@ sap.ui.define([], function () {
     const getAddReviewDialog = (oEvent) => oEvent.getSource().getParent();
 
     return {
-        beforeOpenDialog: function () {
-            console.log("BEFORE OPEN RAN");
-        },
         submit: function (oEvent) {
             getAddReviewDialog(oEvent).close();
         },
@@ -922,4 +919,99 @@ Here we defined two functions: submit and cancel, which if you recall from our d
 - Our goal now is to close the dialog, so we don’t actually want the button but the dialog. Since the dialog will always be the immediate parent of the button, we can call getParent on the button object. 
 - Finally, once we have the dialog, we use the close method to, you know, close it. 
 - In this case I made a helper method called `getAddReviewDialog` to make what’s happening a little more explicit. Now, if you restart the app and try closing the dialog, you’ll see that it works!
+
+## Part 13: beforeOpen events for dialogs and creating input forms with the oData V4 Model
+## Step 1: Setting Up A beforeOpen Event Handler
+Remember that for performance purposes we set up our dialog to have only a single instance for the entire page. However, this means that we’ll need some custom logic to run before the dialog opens to bind the product of the row we clicked to the dialog so we can leverage SAPUI5’s oData V4 model to create the new Review. 
+
+The first step in doing that is to define an `onBeforeOpen` event handler in our `AddReviewDialogHandler` file. For now, the only content of the function is logging a message so we can confirm that the function is running.
+
+```js
+        beforeOpenDialog: function () {
+            console.log("BEFORE OPEN RAN");
+        },
+```
+
+Ordinarily we would designate this function as the `onBeforeOpen` event handler in the XML fragment file, but in this case we can’t do that because we need to pass some custom information when we open it that only the button knows about. Therefore, we’ll programmatically assign this function through our `AddReviewButtonHandler` file.
+
+We do this by first importing our `AddReviewButtonHandler` as shown below:
+```js
+sap.ui.define(
+    ["sap/ui/core/Fragment","./AddReviewDialogHandler"], 
+    function (Fragment,AddReviewDialogHandler) {
+    "use strict";
+```
+
+After that, we use the [attachBeforeOpen](https://sapui5.hana.ondemand.com/sdk/#/api/sap.m.Dialog%23methods/attachBeforeOpen) method of the dialog and pass the function to run on opening, as shown below.
+
+```js
+    this.oAddReviewDialog.attachBeforeOpen(
+        AddReviewDialogHandler.beforeOpenDialog
+    );
+```
+
+Try running the app now and we can confirm that the function runs as expected by looking log in the `console`. Of course, if you try opening this a few times, you’ll notice that each time we open the dialog, the function runs an increasing number of times.
+
+I imagine you already know the issue, but basically the problem is every time we open the dialog, we attach the event handler again; it will run once for each time we attach it, ever increasing with each click. This is no good of course! But, because we potentially need new input data if the user clicks a button on a different row, we can’t simply check to see if the function already exists before attaching it; instead, we need to detach it once the dialog has opened using the [detachBeforeOpen](https://sapui5.hana.ondemand.com/sdk/#/api/sap.m.Dialog%23methods/detachBeforeOpen) method, as shown below:
+
+```js
+this.oAddReviewDialog.detachBeforeOpen(
+    AddReviewDialogHandler.beforeOpenDialog
+);
+```
+Now, if you go back to the UI and click the button, you’ll see that the function only runs once per click, no matter how many times you click it.
+
+### Step 2: Passing Parameters to the Before Open Handler
+Now we have our new event handler, but it won’t do us any good if we can’t pass it the binding information for the product of the row we clicked on. Let’s learn how to do that now.
+
+First of all, there are two pieces of data we need to pass to our function — the ID of the dialog itself (which we will need to access the dialog and its contents from within our dialog handler) and the binding context path, which we will use to indicate to SAPUI5 which product we want to attach the review to. 
+
+Let’s get started. Recall that we already have the dialog’s id, but we need to refactor a bit so that we actually save the ID so we can use it later.
+
+*this.sReviewDialogId = `${oProductlistPage.getId()}-AddReviewDialog`;*
+```js
+if (!this.oAddReviewDialog) {
+                this.sReviewDialogId = `${oProductlistPage.getId()}-AddReviewDialog`;
+                this.oAddReviewDialog = await Fragment.load({
+                    id: this.sReviewDialogId,
+                    name:"usy.products.custom.AddReview.AddReviewDialog"
+                });
+                oProductlistPage.addDependent(this.oAddReviewDialog);
+            }
+```
+Now we need the binding context path. This is stored in the row of the table that we clicked, which is a few parents up from our current position at the button. In order to locate where it is precisely we can simply console log the source of the `event` (i.e. the Add Review button) and look through the parent hierarchy until we find the row:
+```js
+openDialog: async function(oEvent){
+    console.log("THE BUTTON",oEvent.getSource());
+    const oProductlistPage = sap.ui.getCore().byId("usy.products::ProductsList")
+```
+Keep opening the oParent property from console log until you find the row. The tip that you found the row is that it will have an *maggregation* called `cells` and also it’s *sId* property should contain `LineItem-innerTableRow` as well.
+
+Now just count how many levels down you went and call the getParent method that many times. Finally call the method `getBindingContextPath` on the result and you’ll have it. Note that we don’t cache it since each time we click the button we expect to get a different binding path.
+
+```js
+        openDialog: async function(oEvent){
+            const sRowBindingPath = oEvent
+                .getSource()
+                .getParent()
+                .getParent()
+                .getBindingContextPath();
+```
+
+Now we just need to create an object to hold both of these values and pass it to our attachBeforeOpen call, as shown below:
+
+```js
+const oParams = {
+    sRowBindingPath,
+    sReviewDialogId: this.sReviewDialogId,
+};
+
+this.oAddReviewDialog.attachBeforeOpen(
+    oParams,
+    AddReviewDialogHandler.beforeOpenDialog
+);
+```
+
+Now we can go to our `AddReviewDialogHandler` file and confirm that the parameters were received.
+Success! We have our parameters. Next we’ll build a form and bind this product's reviews to it so we can create a new review.
 
