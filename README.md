@@ -921,7 +921,7 @@ Here we defined two functions: submit and cancel, which if you recall from our d
 - In this case I made a helper method called `getAddReviewDialog` to make what’s happening a little more explicit. Now, if you restart the app and try closing the dialog, you’ll see that it works!
 
 ## Part 13: beforeOpen events for dialogs and creating input forms with the oData V4 Model
-## Step 1: Setting Up A beforeOpen Event Handler
+### Step 1: Setting Up A beforeOpen Event Handler
 Remember that for performance purposes we set up our dialog to have only a single instance for the entire page. However, this means that we’ll need some custom logic to run before the dialog opens to bind the product of the row we clicked to the dialog so we can leverage SAPUI5’s oData V4 model to create the new Review. 
 
 The first step in doing that is to define an `onBeforeOpen` event handler in our `AddReviewDialogHandler` file. For now, the only content of the function is logging a message so we can confirm that the function is running.
@@ -1014,4 +1014,148 @@ this.oAddReviewDialog.attachBeforeOpen(
 
 Now we can go to our `AddReviewDialogHandler` file and confirm that the parameters were received.
 Success! We have our parameters. Next we’ll build a form and bind this product's reviews to it so we can create a new review.
+
+### Step 3:Creating a Basic Form and Binding the Reviews
+First let’s create an empty form in our `AddReviewDialog` fragment
+```xml
+<core:FragmentDefinition
+   xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core">
+   <Dialog
+      title="Add Review"
+      core:require="{handler: 'usy/products/custom/AddReview/AddReviewDialogHandler'}">
+      <f:Form
+         id="addReviewForm"
+         editable="true"
+         title="Reveiw Details">
+         <f:layout>
+            <f:ColumnLayout />
+         </f:layout>
+      </f:Form>
+```
+
+Here we define a [Form](https://sapui5.hana.ondemand.com/sdk/#/api/sap.ui.layout.form.Form) with an ID of “addReviewForm”, which we will use to access it from the handler. We set it’s property editable to true as well. Despite what it may appear, this is merely for line formatting purposes and has no impact on whether or not the form is actually editable. Finally, we give the form the title “Review Details”, which will appear at the top of the
+form.
+
+Next, in the aggregation layout we specify *[ColumnLayout](https://sapui5.hana.ondemand.com/sdk/#/api/sap.ui.layout.form.ColumnLayout%23overview)* and for the time being accept the default parameters, though later we may tweak them a little bit to get the best visual experience for our users.
+
+Now we need to bind the selected product's reviews to the form. For those familiar with SAPUI5’s oData V2 model, the next steps may seem a bit unintuitive, but it’s necessary for working with the [V4 model](https://sapui5.hana.ondemand.com/sdk/#/topic/bcdbde6911bd4fc68fd435cf8e306ed0). If you are more comfortable working with the [V2 model](https://sapui5.hana.ondemand.com/sdk/#/topic/6c47b2b39db9404582994070ec3d57a2#loio6c47b2b39db9404582994070ec3d57a2), feel free to use the oData V2 adapter instead. You can find instructions on how to set it up [here](https://blogs.sap.com/2020/06/30/how-to-add-odata-v2-adapter-proxy-to-your-cap-project/).
+
+First, let’s destructure our parameters and then use the dialog ID to allow us to access the form that we just made.
+```js
+sap.ui.define(["sap/ui/core/Fragment"], function (Fragment) {
+    "use strict";
+  
+    const getAddReviewDialog = (oEvent) => oEvent.getSource().getParent();
+
+    return {
+        beforeOpenDialog: function (oEvent, oParams) {
+            console.log("BEFORE OPEN RAN");
+            console.log("PARAMS",oParams);
+            const {sRowBindingPath, sReviewDialogId} = oParams;
+            const oAddReviewForm = Fragment.byId(sReviewDialogId,"addReviewForm");
+        },
+```
+
+Next we have to use the binding path from our parameters to bind the product's reviews to the form’s `formContainers` aggregation, as shown below:
+
+```js
+sap.ui.define(["sap/ui/core/Fragment"], function (Fragment) {
+    "use strict";
+  
+    const getAddReviewDialog = (oEvent) => oEvent.getSource().getParent();
+
+    return {
+        beforeOpenDialog: function (oEvent, oParams) {
+            console.log("BEFORE OPEN RAN");
+            console.log("PARAMS",oParams);
+            const {sRowBindingPath, sReviewDialogId} = oParams;
+            const oAddReviewForm = Fragment.byId(sReviewDialogId,"addReviewForm");
+
+            oAddReviewForm.bindAggregation("formContainers",{
+                path:`${sRowBindingPath}/reviews`
+            })
+        },
+```
+
+We call the [bindAggregation](https://sapui5.hana.ondemand.com/sdk/#/api/sap.ui.base.ManagedObject%23methods/bindAggregation) method of our form, passing in the name of the aggregation and an object containing the [binding information](https://sapui5.hana.ondemand.com/sdk/#/api/sap.ui.base.ManagedObject.AggregationBindingInfo%23overview). For now we just specify the path to the data that needs to be bound. For that, we take the binding path for the current product and append ‘/reviews’ as this will point to the reviews of this product. It’s actually the same syntax as if we were typing in the URL to get the data directly from the backend *(Products(<uuid>)/reviews).*
+Currently if we try to open the dialog, though, we get the following error:
+
+```log
+EventProvider.fireEvent: Event Listener for event 'press' failed during execution. - Error: Missing template or factory function for aggregation formContainers of Element sap.ui.layout.form.Form#usy.products::ProductsList-AddReviewDialog--addReviewForm ! 
+```
+
+We got this error because we didn’t tell it what to render with the data we bound. Let’s add a simple form container, element, and input so we can get rid of the error and see what we’re getting
+```js
+sap.ui.define(["sap/ui/core/Fragment",
+    "sap/ui/layout/form/FormContainer",
+    "sap/ui/layout/form/FormElement",
+    "sap/m/Input",
+], function (Fragment, FormContainer, FormElement, Input) {
+    "use strict";
+  
+    const getAddReviewDialog = (oEvent) => oEvent.getSource().getParent();
+
+    const oContainerTemplate = new FormContainer();
+    const oTitleElement = new FormElement({label:"Title"});
+    const oTitleInput = new Input({value:"title"});
+    oTitleElement.addField(oTitleInput);
+    oContainerTemplate.addFormElement(oTitleElement);
+```
+
+```js
+oAddReviewForm.bindAggregation("formContainers",{
+                path:`${sRowBindingPath}/reviews`,                
+                template: oContainerTemplate,
+            })
+```
+
+Just a brief refresher on SAPUI5 forms to help those who haven’t worked with them before. A Form has many FormContainers. One form container is associated with a specific category of information, for example if we were making a form to input employee information we’d have a container for general info, contact info, address info, etc. Every form container has many FormElements, which contains a label for a specific piece of information and one or more inputs to gather that information. For example, in our employee example, telephone number might have the label “telephone” with 3 separate inputs to capture each part of the phone number separately (XXXXXXX-XXXX, assuming we’re only dealing with American phone numbers).
+
+In our case, we create a FormContainer and provide it with a single FormElement with the label “Title”. We then put a single Input field inside of the FormElement, binding it to the “title” property of the current review. You may already be able to predict what’s going to happen here, That’s a problem, isn’t it? Because we bound all of the Reviews to the container, we got an input for every review, and they’re all already full with existing data! That’s not what we want!
+
+You may wonder why we did this in the first place, but in short it’s a quirk of the oData V4 model — it’s designed specifically with handling tables in mind and it doesn’t support this kind of single form entity creation in an explicit way, but it can be done. Let’s learn how.
+
+### Step 4: Single EntityCreation With the oData V4 Model
+If you search the internet, there aren’t many good solutions out there for how to do single entity creation with the oData V4 model, but I’d like to show my solution here as I think it’s a better than the ones that I’ve found so far (I’ll leave it to you to judge). The first step is to limit the number of FormContainers created to just one using the length property for our `bindAggregation` function.
+
+```js
+    oAddReviewForm.bindAggregation("formContainers",{
+        path:`${sRowBindingPath}/reviews`,                
+        template: oContainerTemplate,
+        length:1
+    })
+```
+
+Better, but we still have an existing review attached. If we were actually to submit this data, it would update that review. Of course we don’t want that. In order to make sure we get a blank one, we need to get the binding and create a new, blank entry.
+
+```js
+    const oReviewBinding = oAddReviewForm.getBinding("formContainers");
+    oReviewBinding.create({
+        rating: 0,
+        title: "",
+        text: "",
+    });
+```
+
+First we get the binding using the [getBinding](https://sapui5.hana.ondemand.com/sdk/#/api/sap.ui.base.ManagedObject%23methods/getBinding) method of the form. After that we use the create method of the binding to create a new entry. As an input, we provide an object that matches the shape of our Review model but set all of the properties to blank values. Note, however, that with our current settings this will immediately send a request to the backend to create this entity. We don’t want that — we want our user to input values first. In order prevent automatic submission by the create method, we simply need to set an `updateGroupId` for our binding, which tells SAPUI5 to not send a create, update, or delete request until that group ID is invoked. 
+
+Until invoked, SAPUI5 will simple hold on to all the changes but not submit them. Let’s add that:
+
+```js
+    oAddReviewForm.bindAggregation("formContainers",{
+        path:`${sRowBindingPath}/reviews`,                
+        template: oContainerTemplate,
+        length:1,
+        parameters: {
+            $$updateGroupId: "reviews",
+        },
+    })
+```
+Success! We have one blank entry in our dialog now.
+
+The last thing you may be concerned about here is unnecessary calls to the backend for review data that we will never use. Luckily, this doesn’t seem to be an issue. You can try clicking all the Add Review buttons you want, but check the console output and you’ll find no unnecessary calls for review data.
+
 
