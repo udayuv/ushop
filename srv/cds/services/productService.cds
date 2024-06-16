@@ -1,4 +1,4 @@
-using { udayuv.ushop as ushop } from '../db';
+using { udayuv.ushop as ushop } from '../../../db';
 
 service ProductService {
     entity Products as projection on ushop.Products

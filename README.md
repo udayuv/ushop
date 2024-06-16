@@ -1,3 +1,8 @@
+https://community.sap.com/t5/technology-blogs-by-sap/cap-with-fiori-elements-side-effects-custom-actions-dynamic-expressions/ba-p/13556745
+
+https://github.com/SAP-samples/fiori-elements-feature-showcase
+
+
 ## Part 7: Custom Types, Aspects, and Associations in CDS data models
 
 ### Step 1: The Ratings Data Model

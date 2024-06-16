@@ -1,10 +1,6 @@
-using ProductService as service from '../../srv/productservice';
+using ProductService as service from '../../';
 
 annotate service.Products with @(UI : {
-    HeaderInfo : {
-        TypeName : 'Product',
-        TypeNamePlural : 'Products',
-    },
     LineItem : [
         {
             $Type : 'UI.DataField',
