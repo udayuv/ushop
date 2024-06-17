@@ -17,7 +17,8 @@ annotate service.Products with @(UI : {
         },
         {
             $Type : 'UI.DataField',
-            Value : stock
+            Value : stock,
+            ![@UI.Importance] : #High
         },
         {
             Value: description,

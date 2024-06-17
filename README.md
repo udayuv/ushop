@@ -2,6 +2,7 @@ https://community.sap.com/t5/technology-blogs-by-sap/cap-with-fiori-elements-sid
 
 https://github.com/SAP-samples/fiori-elements-feature-showcase
 
+[Different Representations of a Field](https://sapui5.hana.ondemand.com/sdk/#/topic/c18ada4bc56e427a9a2df2d1898f28a5)
 
 ## Part 7: Custom Types, Aspects, and Associations in CDS data models
 
@@ -1164,3 +1165,13 @@ Success! We have one blank entry in our dialog now.
 The last thing you may be concerned about here is unnecessary calls to the backend for review data that we will never use. Luckily, this doesn’t seem to be an issue. You can try clicking all the Add Review buttons you want, but check the console output and you’ll find no unnecessary calls for review data.
 
 
+### Importance annotation
+
+To show the fields irrespective of the device, need to set the field importance high so it will be visible on list page irrespective of the device
+```cds
+    {
+        $Type : 'UI.DataField',
+        Value : stock,
+        ![@UI.Importance] : #High
+    },
+```
