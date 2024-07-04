@@ -136,7 +136,17 @@
           "options": {
             "settings": {
               "editableHeaderContent": false,
-              "contextPath": "/Products"
+              "contextPath": "/Products",
+              "controlConfiguration": {
+                  "@com.sap.vocabularies.UI.v1.FieldGroup#myQualifier": {
+                    "fields": {
+                      "customFormElementAnchor": {
+                        "template": "usy.products.custom.fragment.customColumnFragment",
+                        "label": "objectfield"
+                      }
+                    }
+                  }
+                }
             }
           }
         }

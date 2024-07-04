@@ -1,6 +1,7 @@
 using ProductService as service from '../..';
 
 annotate service.Products with @(
+    odata.draft.enabled: true,
     UI : {
         HeaderInfo  : {
             $Type : 'UI.HeaderInfoType',
@@ -10,7 +11,7 @@ annotate service.Products with @(
             ImageUrl : 'https://placebear.com/251/251'
         },
 
-        HeaderFacets: [
+        HeaderFacets: [            
             {$Type : 'UI.ReferenceFacet', Target : '@UI.DataPoint#RatingIndicator'},
             {$Type : 'UI.ReferenceFacet', Target : '@UI.DataPoint#Rating'},
             {$Type : 'UI.ReferenceFacet', Target : '@UI.DataPoint#RatingProgress'},
@@ -42,6 +43,12 @@ annotate service.Products with @(
                         ID     : 'SubSectionAdminData',
                         Label  : 'Admin Date',
                         Target : '@UI.FieldGroup#Admin'
+                    },
+                    {
+                        $Type  : 'UI.ReferenceFacet',
+                        ID     : 'SubSectionAdData',
+                        Label  : 'Macros Field',
+                        Target : '@UI.FieldGroup#myQualifier'
                     }
                 ]
             },
