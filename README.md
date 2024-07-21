@@ -1185,3 +1185,9 @@ inside app/index.html you can directly manipulate the ui versio `src="https://sa
         data-sap-ui-theme="sap_horizon"
 
 ```
+
+### Preview on Object Page
+if you want to hide some values on object page and show the details on click on more then use
+```cds
+  ![@UI.PartOfPreview] : false
+```

@@ -37,7 +37,8 @@ annotate service.Products with @(
                         $Type  : 'UI.ReferenceFacet',
                         ID     : 'SubSectionMainDetails',
                         Label  : 'Main Details',
-                        Target : '@UI.FieldGroup#MainDetails'
+                        Target : '@UI.FieldGroup#MainDetails',
+                        ![@UI.PartOfPreview] : false
                     },
                     {
                         $Type  : 'UI.ReferenceFacet',
