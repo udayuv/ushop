@@ -6,8 +6,6 @@
     <packaging>pom</packaging>
     <name>ushop parent</name>
     <properties>
-        
-        
         <revision>1.0.0-SNAPSHOT</revision>
         <jdk.version>17</jdk.version>
         <cds.services.version>3.0.0-m2423</cds.services.version>
@@ -21,8 +19,6 @@
     </modules>
     <dependencyManagement>
         <dependencies>
-            
-            
             <dependency>
                 <groupId>com.sap.cds</groupId>
                 <artifactId>cds-services-bom</artifactId>
@@ -41,11 +37,6 @@
     </dependencyManagement>
     <build>
         <plugins>
-            
-            
-            
-            
-            
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>

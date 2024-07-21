@@ -1175,3 +1175,13 @@ To show the fields irrespective of the device, need to set the field importance 
         ![@UI.Importance] : #High
     },
 ```
+
+### change ui version
+inside app/index.html you can directly manipulate the ui versio `src="https://sapui5.hana.ondemand.com/1.124.1/resources/sap-ui-core.js"`, so here i have hardcoded to 124 version
+```html
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.124.1/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+
+```

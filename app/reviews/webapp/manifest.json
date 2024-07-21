@@ -1,7 +1,7 @@
 {
   "_version": "1.58.0",
   "sap.app": {
-    "id": "usy.products",
+    "id": "reviews",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -13,11 +13,11 @@
     "sourceTemplate": {
       "id": "@sap/generator-fiori:lrop",
       "version": "1.11.3",
-      "toolsId": "5a0317c6-d81b-48cd-a0b4-8fe7898a831d"
+      "toolsId": "0d25a452-4dcf-41a0-aab0-7c0bc27cee48"
     },
     "dataSources": {
       "mainService": {
-        "uri": "/odata/v4/ProductService/",
+        "uri": "/odata/v4/ReviewService/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -44,8 +44,9 @@
     }
   },
   "sap.ui5": {
+    "flexEnabled": true,
     "dependencies": {
-      "minUI5Version": "1.124.1",
+      "minUI5Version": "1.126.0",
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
@@ -61,7 +62,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "usy.products.i18n.i18n"
+          "bundleName": "reviews.i18n.i18n"
         }
       },
       "": {
@@ -87,66 +88,42 @@
       "routes": [
         {
           "pattern": ":?query:",
-          "name": "ProductsList",
-          "target": "ProductsList"
+          "name": "ReviewsList",
+          "target": "ReviewsList"
         },
         {
-          "pattern": "Products({key}):?query:",
-          "name": "ProductsObjectPage",
-          "target": "ProductsObjectPage"
+          "pattern": "Reviews({key}):?query:",
+          "name": "ReviewsObjectPage",
+          "target": "ReviewsObjectPage"
         }
       ],
       "targets": {
-        "ProductsList": {
+        "ReviewsList": {
           "type": "Component",
-          "id": "ProductsList",
+          "id": "ReviewsList",
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
-              "contextPath": "/Products",
+              "contextPath": "/Reviews",
               "variantManagement": "Page",
-              "controlConfiguration":{
-                "@com.sap.vocabularies.UI.v1.LineItem":{
-                  "tableSettings": {
-                        "selectionMode": "None"
-                    },
-                  "columns" :{
-                    "AddReviewColumn":{
-                      "header":"Add Review",
-                      "template":"usy.products.custom.AddReview.AddReviewButton"
-                    }
-                  }
-                }
-              },
               "navigation": {
-                "Products": {
+                "Reviews": {
                   "detail": {
-                    "route": "ProductsObjectPage"
+                    "route": "ReviewsObjectPage"
                   }
                 }
-              },
-              "initialLoad": "Enabled"
+              }
             }
           }
         },
-        "ProductsObjectPage": {
+        "ReviewsObjectPage": {
           "type": "Component",
-          "id": "ProductsObjectPage",
+          "id": "ReviewsObjectPage",
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
               "editableHeaderContent": false,
-              "contextPath": "/Products",
-              "controlConfiguration": {
-                  "@com.sap.vocabularies.UI.v1.FieldGroup#myQualifier": {
-                    "fields": {
-                      "customFormElementAnchor": {
-                        "template": "usy.products.custom.fragment.customColumnFragment",
-                        "label":"{i18n>Custom Label}"
-                      }
-                    }
-                  }
-                }
+              "contextPath": "/Reviews"
             }
           }
         }

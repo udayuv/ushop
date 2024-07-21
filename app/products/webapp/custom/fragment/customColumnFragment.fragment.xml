@@ -1,7 +1,6 @@
 <core:FragmentDefinition
 	xmlns:core="sap.ui.core"
 	xmlns="sap.m"
-	xmlns:macros="sap.fe.macros"
-	xmlns:l="sap.ui.layout">
-	<macros:Field id="MyField" metaPath="currency" />
+	xmlns:macros="sap.fe.macros">
+	<macros:Field metaPath="currency" />
 </core:FragmentDefinition>

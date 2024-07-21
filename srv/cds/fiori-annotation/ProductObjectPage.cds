@@ -1,4 +1,5 @@
 using ProductService as service from '../..';
+using udayuv.ushop as db from '../../../db';
 
 annotate service.Products with @(
     odata.draft.enabled: true,
@@ -118,3 +119,5 @@ annotate service.Products with @(
         },
     }
 );
+
+annotate service.Products.currency with @(Common.ValueListWithFixedValues);
