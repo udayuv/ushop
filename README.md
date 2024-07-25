@@ -1187,7 +1187,97 @@ inside app/index.html you can directly manipulate the ui versio `src="https://sa
 ```
 
 ### Preview on Object Page
-if you want to hide some values on object page and show the details on click on more then use
+if you want to hide some values on object page and show the details on click on more then use `![@UI.PartOfPreview] : false`
+and this should be ideally done on facet [see here](https://github.com/SAP/odata-vocabularies/blob/8d9f4484c4b47d80faf090abecfa184dcc4468b7/vocabularies/UI.md#PartOfPreview)
+
 ```cds
-  ![@UI.PartOfPreview] : false
+Facets : [
+        {
+            $Type  : 'UI.ReferenceFacet',
+            ID     : 'SubSectionMainDetails',
+            Label  : 'Main Details',
+            Target : '@UI.FieldGroup#MainDetails',
+            ![@UI.PartOfPreview] : false
+        },
+        {
 ```
+
+### Add a custom button (object list table)
+Now we need to add a button to object page list table presentation and by default we want that button to be hidden
+[see wiki](https://wiki.one.int.sap/wiki/display/fioritech/Table+Control+-+Custom+Columns)
+Fisrt we need to create a fragment.xml file
+```xml
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:macros="sap.fe.macros">
+	<VBox core:require="{ handler: 'usy/products/custom/Controller/CustomLikeButton'}">
+		<Button text="Like" press="handler.onPress" />
+	</VBox>
+</core:FragmentDefinition>
+```
+Also on click of button we added just an click action
+```js
+sap.ui.define([
+    "sap/m/MessageToast"
+], function(MessageToast) {
+    'use strict';
+
+    return {
+        onPress: function(oEvent) {
+            MessageToast.show("Liked Comment.");
+        }
+    };
+});
+```
+
+In **manifest.json** we provide the custom template details and column id and availability
+
+```json
+"ProductsObjectPage": {
+    ...,
+    "options": {
+        ...,
+        "reviews/@com.sap.vocabularies.UI.v1.LineItem": {
+            "columns": {
+                "AddListColumn": {
+                    "header": "Like",
+                    "template": "usy.products.custom.fragment.CustomListTableButton",
+                    "availability": "Adaptation"
+                }
+            }
+```
+**availability** Defines where the column should be shown.
+
+- Default: it will be shown by default in the table.
+- Adaptation: it will initially not shown in the table but be available via end user adaptation
+- Hidden: the column is neither available in the table nor in adaptation
+
+As this button would be hidden by default on list table to show it we can select from the settings icon.
+
+### Custom action on Object Page
+below is the snippet for customaction under actions object to show the custom action button on object page and also with method name inside controller which would be triggered on the page
+
+```json
+ "ProductsObjectPage": {
+          "type": "Component",
+          "id": "ProductsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Products",
+              "content": {
+                "header": {
+                  "actions": {
+                    "customaction": {
+                      "press": "usy.products.custom.Controller.CustomAction.triggerAction",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "Action",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "DeleteAction"
+                      }
+                    }
+                  }
+                },
+```
+

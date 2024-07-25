@@ -105,15 +105,15 @@
             "settings": {
               "contextPath": "/Products",
               "variantManagement": "Page",
-              "controlConfiguration":{
-                "@com.sap.vocabularies.UI.v1.LineItem":{
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
-                        "selectionMode": "None"
-                    },
-                  "columns" :{
-                    "AddReviewColumn":{
-                      "header":"Add Review",
-                      "template":"usy.products.custom.AddReview.AddReviewButton"
+                    "selectionMode": "None"
+                  },
+                  "columns": {
+                    "AddReviewColumn": {
+                      "header": "Add Review",
+                      "template": "usy.products.custom.AddReview.AddReviewButton"
                     }
                   }
                 }
@@ -137,16 +137,53 @@
             "settings": {
               "editableHeaderContent": false,
               "contextPath": "/Products",
-              "controlConfiguration": {
-                  "@com.sap.vocabularies.UI.v1.FieldGroup#myQualifier": {
-                    "fields": {
-                      "customFormElementAnchor": {
-                        "template": "usy.products.custom.fragment.customColumnFragment",
-                        "label":"{i18n>Custom Label}"
+              "content": {
+                "header": {
+                  "actions": {
+                    "customaction": {
+                      "press": "usy.products.custom.Controller.CustomAction.triggerAction",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "Action",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "DeleteAction"
                       }
                     }
                   }
+                },
+                "body": {
+                  "sections": {
+                    "CustomSectionProductsOp": {
+                      "template": "usy.products.custom.fragment.CustomSectionProductsOp",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "GeneralInformationFacet"
+                      },
+                      "title": "Custom Section"
+                    }
+                  }
                 }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.FieldGroup#myQualifier": {
+                  "fields": {
+                    "customFormElementAnchor": {
+                      "template": "usy.products.custom.fragment.customColumnFragment",
+                      "label": "{i18n>Macros_ValueHelp}"
+                    }
+                  }
+                },
+                "reviews/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "columns": {
+                    "AddListColumn": {
+                      "header": "Like",
+                      "template": "usy.products.custom.fragment.CustomListTableButton",
+                      "availability": "Adaptation"
+                    }
+                  }
+                }
+              }
             }
           }
         }

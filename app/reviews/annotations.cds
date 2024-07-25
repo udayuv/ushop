@@ -20,6 +20,7 @@ annotate service.Reviews with @(
     ]
 );
 annotate service.Reviews with @(
+    odata.draft.enabled: true,
     UI.FieldGroup #GeneratedGroup1 : {
         $Type : 'UI.FieldGroupType',
         Data : [
@@ -49,3 +50,21 @@ annotate service.Reviews with @(
         },
     ]
 );
+annotate service.Reviews with {
+    rating @(Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'Reviews',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : rating,
+                    ValueListProperty : 'rating',
+                },
+            ],
+            Label : 'Target',
+        },
+        Common.Text : {
+            $value : text,
+            ![@UI.TextArrangement] : #TextOnly,
+        }
+)};
