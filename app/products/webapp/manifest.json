@@ -142,8 +142,6 @@
                   "actions": {
                     "customaction": {
                       "press": "usy.products.custom.Controller.CustomAction.triggerAction",
-                      "visible": true,
-                      "enabled": true,
                       "text": "Action",
                       "position": {
                         "placement": "After",
@@ -177,7 +175,7 @@
                 "reviews/@com.sap.vocabularies.UI.v1.LineItem": {
                   "columns": {
                     "AddListColumn": {
-                      "header": "Like",
+                      "header": "Likes",
                       "template": "usy.products.custom.fragment.CustomListTableButton",
                       "availability": "Adaptation"
                     }

@@ -6,7 +6,7 @@ entity Products : cuid,managed{
     name        : ushop.Name;
     description : ushop.Text;
     price       : Decimal(9,2);
-    rating      : Decimal(2, 1)@assert.range : [ 0.0, 5.0 ];
+    rating      : ushop.Rating @assert.range;
     stock       : Integer;
     discount    : Decimal;
     currency    : Currency;

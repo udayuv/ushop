@@ -121,10 +121,10 @@ annotate service.Products with @(
     }
 );
 
-annotate db.Roles with {
-    ID 
+annotate service.Currencies with {
+    code 
     @Common : {
-        Label : 'Role ID',
+        Label : 'Code',
         Text : {
             $value  : name,
             ![@UI.TextArrangement] : #TextOnly
@@ -132,7 +132,7 @@ annotate db.Roles with {
     };
 
     name @Common :{
-        Label : 'Role'
+        Label : 'Currency Code'
     }
 }
-annotate db.Role with @(Common.ValueListWithFixedValues);
+annotate service.Products.currency with @(Common.ValueListWithFixedValues);

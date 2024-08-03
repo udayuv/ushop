@@ -2,5 +2,5 @@
 	xmlns:core="sap.ui.core"
 	xmlns="sap.m"
 	xmlns:macros="sap.fe.macros">
-	<macros:Field metaPath="role_ID" />
+	<macros:Field metaPath="currency_code" />
 </core:FragmentDefinition>

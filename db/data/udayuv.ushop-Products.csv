@@ -1,6 +1,6 @@
 ID,name,description,price,rating,stock,discount,CURRENCY_CODE
-f846b0b9-01d4-4f6d-82a4-d79204f62278,iPhone 9,An apple mobile which is nothing like apple,549.99,3.6,94,12.96,USD
-9b084139-0b1e-43b6-b12a-7b3669d75f02,iPhone x,Model A19211 6.5-inch Super Retina HD display with OLED technology A12 Bionic chip with ,899.19,4.0,34,17.96,USD
-51061ce3-ddde-4d70-a2dc-6314afbcc73e,Samsung Universe 9,Samsung's new variant which goes beyond Galaxy to the Universe,1249.21,4.9,36,15.46,EUR
-aebdfc8a-0dfa-4468-bd36-48aabd65e663,MacBook Pro,MacBook Pro 2021 with mini-LED display may launch between September,1749.59,4.7,83,11.02,CAD
-4a519e61-3c3a-4bd9-ab12-d7e0c5329933,Samsung Galaxy Book,"Samsung Galaxy Book S (2020) Laptop With Intel Lakefield Chip, 8GB of RAM Launched",1499.97,3.5,50,4.5,EUR
+f846b0b9-01d4-4f6d-82a4-d79204f62278,iPhone 9,An apple mobile which is nothing like apple,549.99,3,94,12.96,USD
+9b084139-0b1e-43b6-b12a-7b3669d75f02,iPhone x,Model A19211 6.5-inch Super Retina HD display with OLED technology A12 Bionic chip with ,899.19,4,34,17.96,USD
+51061ce3-ddde-4d70-a2dc-6314afbcc73e,Samsung Universe 9,Samsung's new variant which goes beyond Galaxy to the Universe,1249.21,3,36,15.46,EUR
+aebdfc8a-0dfa-4468-bd36-48aabd65e663,MacBook Pro,MacBook Pro 2021 with mini-LED display may launch between September,1749.59,1,83,11.02,CAD
+4a519e61-3c3a-4bd9-ab12-d7e0c5329933,Samsung Galaxy Book,"Samsung Galaxy Book S (2020) Laptop With Intel Lakefield Chip, 8GB of RAM Launched",1499.97,2,50,4.5,EUR
