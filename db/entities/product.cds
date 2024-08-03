@@ -11,4 +11,5 @@ entity Products : cuid,managed{
     discount    : Decimal;
     currency    : Currency;
     reviews     : Association to many ushop.Reviews on reviews.product = $self;
+    users       : Association to many ushop.Users on users.products = $self;
 }

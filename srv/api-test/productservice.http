@@ -32,3 +32,14 @@ content-type: application/json
 
 ### Get the new Review
 GET http://localhost:8080/odata/v4/ProductService/Reviews(a104626a-0b08-42a6-87e8-7bd60be1dbbd) HTTP/1.1
+
+### Create a user
+POST http://localhost:8080/odata/v4/ProductService/Users HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Abhi",
+  "phone": "+91 1234567890",
+  "city": "Bangalore",
+  "country_code": "IND"
+}

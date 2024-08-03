@@ -3,3 +3,4 @@ using from './ProductObjectPage';
 using from './ReviewsListPage';
 using from './ReviewObjectPage';
 using from './field-control';
+using from './userListPage';

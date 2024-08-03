@@ -7,4 +7,5 @@ service ProductService {
         };
 
     entity Reviews as projection on ushop.Reviews;
+    entity Users as projection on ushop.Users;
 }

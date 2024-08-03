@@ -1,5 +1,27 @@
 <core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:macros="sap.fe.macros">
-	<VBox>
-		<Text text="Custom Section Area" />
-	</VBox>
+	<IconTabBar
+		id="idIconTabBarInlineMode"
+		headerMode="Inline"
+		expanded="{device>/isNoPhone}"
+		class="sapUiResponsiveContentPadding">
+		<items>
+			<IconTabFilter
+				text="Info"
+				key="info"
+				count="3">
+				<Text text="Info content goes here ..." />
+			</IconTabFilter>
+			<IconTabFilter
+				text="Reviews"
+				key="reviews"
+				count="16">
+				<macros:Table id="reviewMacro" metaPath="reviews/@com.sap.vocabularies.UI.v1.LineItem" enablePaste="false" enableExport="false"/>
+			</IconTabFilter>
+			<IconTabFilter
+				text="Users"
+				key="users">
+				<macros:Table id="userMacro" metaPath="users/@com.sap.vocabluries.UI.v1.LineItem"/>
+			</IconTabFilter>
+		</items>
+	</IconTabBar>
 </core:FragmentDefinition>

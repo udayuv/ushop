@@ -158,7 +158,7 @@
                         "placement": "After",
                         "anchor": "GeneralInformationFacet"
                       },
-                      "title": "Custom Section"
+                      "title": "Custom Section With Iconbar"
                     }
                   }
                 }
@@ -173,6 +173,9 @@
                   }
                 },
                 "reviews/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "selectionMode": "Single"
+                  },
                   "columns": {
                     "AddListColumn": {
                       "header": "Likes",

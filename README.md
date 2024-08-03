@@ -1281,3 +1281,68 @@ below is the snippet for customaction under actions object to show the custom ac
                 },
 ```
 
+## Part 14: Custom Section 
+#### Adding inline tabs
+1. [UI5 IconTabBar](https://sapui5.hana.ondemand.com/#/entity/sap.m.IconTabBar)
+2. [Wiki Object Page Custom Section](https://wiki.one.int.sap/wiki/pages/viewpage.action?spaceKey=fioritech&title=Object+Page+-+Custom+Section)
+3. [UI5 Tutorial](https://sapui5.hana.ondemand.com/1.126.1/#/topic/2680aa9b16c14a00b01261d04babbb39)
+4. [Macros Table](https://sapui5.hana.ondemand.com/#/api/sap.fe.macros.Table%23controlProperties)
+
+By following the above doc first we will create a custom section 
+
+#### Custom Section in Object Page
+
+This will create a custom section with title custom section after general information.
+```json
+"options": {
+    "settings": {
+        ....
+        },
+        "body": {
+            "sections": {
+            "CustomSectionProductsOp": {
+                "template": "usy.products.custom.fragment.CustomSectionProductsOp",
+                "position": {
+                "placement": "After",
+                "anchor": "GeneralInformationFacet"
+                },
+                "title": "Custom Section"
+            }
+            }
+        }
+```
+The xml CustomSectionProductsOp is having only one text to show in page.
+```xml
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:macros="sap.fe.macros">
+	<VBox>
+		<Text text="Custom Section Area" />
+	</VBox>
+</core:FragmentDefinition>
+```
+### UI5 version change for macros
+After adding version in ui5.yaml the macros started working
+```yaml
+ ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+          version: 1.89.0 
+```
+
+### Custom Icon Tab in custom section
+Now we will modify the custom section will introduce icon tab inside it ref [code](https://sapui5.hana.ondemand.com/#/entity/sap.m.IconTabBar/sample/sap.m.sample.IconTabBarInlineMode/code)
+
+Now we need to add macros to icon filter so that dynamically we can show list tables, for example we have included reviews listtable using macros, we can enable disable the action buttons also.
+
+```xml
+<IconTabFilter
+    text="Reviews"
+    key="reviews"
+    count="16">
+    <Text text="Reviews go here ..." />
+    <macros:Table id="MyTable" metaPath="reviews/@com.sap.vocabularies.UI.v1.LineItem" />
+</IconTabFilter>
+```
+
+
