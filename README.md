@@ -1346,3 +1346,31 @@ Now we need to add macros to icon filter so that dynamically we can show list ta
 ```
 
 
+### Action on footer
+to show a custom action on footer in manifest.json we need to add a footer section in content and in display mode also it will keep showing the action on bottom.
+```json
+"options": {
+    "settings": {
+        "editableHeaderContent": false,
+        "contextPath": "/Products",
+        "content": {
+        "footer": {
+            "actions": {
+            "footerAction": {
+                "press": "usy.products.custom.controller.AddToCartAction.addToCartAction",
+                "text": "Add to Cart"
+            }
+            }
+        }
+```
+
+If you want to handle it dynamically you need to put a condition on visible `"visible":"{= ${ui>/editMode} === 'Editable'}"`
+by this if it is in draft mode then only it will be visible else it will not show
+
+```json
+"footerAction": {
+    "press": "usy.products.custom.controller.AddToCartAction.addToCartAction",
+    "visible":"{= ${ui>/editMode} === 'Editable'}",
+    "text": "Add to Cart"
+}
+```

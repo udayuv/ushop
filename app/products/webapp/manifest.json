@@ -161,6 +161,14 @@
                       "title": "Custom Section With Iconbar"
                     }
                   }
+                },
+                "footer": {
+                  "actions": {
+                    "footerAction": {
+                      "press": "usy.products.custom.controller.AddToCartAction.addToCartAction",
+                      "text": "Add to Cart"
+                    }
+                  }
                 }
               },
               "controlConfiguration": {
