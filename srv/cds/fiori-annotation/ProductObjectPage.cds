@@ -43,7 +43,7 @@ annotate service.Products with @(
                     {
                         $Type  : 'UI.ReferenceFacet',
                         ID     : 'SubSectionAdminData',
-                        Label  : 'Admin Date',
+                        Label  : 'Admin Data',
                         Target : '@UI.FieldGroup#Admin'
                     },
                     {

@@ -180,10 +180,45 @@
                     }
                   }
                 },
+                "@com.sap.vocabularies.UI.v1.HeaderFacets": {
+                      "facets": {
+                        "CustomFacet": {
+                          "template": "usy.products.custom.AddReview.AddReviewButton",
+                          "title": "Custom header field",
+                          "position": {
+                            "placement": "After",
+                            "anchor": "rating"
+                          }
+                        }
+                      }
+                  },
+                "@com.sap.vocabularies.UI.v1.FieldGroup#Descr": {
+                  "actions": {
+                    "formaction": {
+                      "press": "usy.products.custom.Controller.CustomActionInForm.actionInForm",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "Desc Action"
+                    }
+                  }
+                },
+                "users/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "selectionMode": "Multi"
+                  }
+                },
                 "reviews/@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
                     "selectionMode": "Single"
                   },
+                  
+                  "actions": {
+                        "customActionOne": {
+                            "text": "custom",
+                            "enabled": true,
+                            "visible":true                                        
+                        }
+                    },
                   "columns": {
                     "AddListColumn": {
                       "header": "Likes",

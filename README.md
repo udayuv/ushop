@@ -1374,3 +1374,19 @@ by this if it is in draft mode then only it will be visible else it will not sho
     "text": "Add to Cart"
 }
 ```
+#### custom action in form
+
+to show the form action in object page with can give the path of fieldgroup
+```json
+"controlConfiguration": {
+    "@com.sap.vocabularies.UI.v1.FieldGroup#Descr": {
+        "actions": {
+        "formaction": {
+            "press": "usy.products.custom.Controller.Formaction.actionform",
+            "visible": true,
+            "enabled": true,
+            "text": "formaction"
+        }
+        }
+    },
+```
